@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\LoginSuccessMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 
 class AuthController extends Controller
@@ -32,6 +34,7 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+        Mail::to($user->email)->send(new LoginSuccessMail($user));
         return response()->json([
             'status' => 'success',
             'user' => $user,
