@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use JetBrains\PhpStorm\Pure;
 
-class LoginSuccessMail extends Mailable implements ShouldQueue
+class LoginSuccessMail extends Mailable
 {
     use Queueable, SerializesModels;
 
