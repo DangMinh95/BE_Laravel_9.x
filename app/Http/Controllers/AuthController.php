@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\LoginSuccessMail;
+use App\Jobs\ProcessLoginEmail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 
 
 class AuthController extends Controller
@@ -29,12 +28,15 @@ class AuthController extends Controller
         if (!$token) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized',
+                'message' => 'Tài khoản hoặc mật khẩu không đúng',
             ], 401);
         }
 
         $user = Auth::user();
-        Mail::to($user->email)->send(new LoginSuccessMail($user));
+
+        ProcessLoginEmail::dispatch($user);
+        $cookie = cookie('authCookie',$token,3600, '/','',true);
+
         return response()->json([
             'status' => 'success',
             'user' => $user,
@@ -42,7 +44,7 @@ class AuthController extends Controller
                 'token' => $token,
                 'type' => 'bearer',
             ],
-        ]);
+        ])->withCookie($cookie);
     }
 
     public function register(Request $request)
