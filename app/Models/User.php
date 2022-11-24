@@ -62,4 +62,24 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    /**
+     * @return collection
+     */
+    public function roles(){
+        return $this->belongsToMany(Role::class, 'role_user','user_id','role_id')->as('role_of_user')->withTimestamps();
+    }
+
+    public function mobiles()
+    {
+        return $this->hasMany(Mobile::class, 'user_id', 'id');
+    }
+
+    protected function firstName(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => ucfirst($value),
+            set: fn ($value) => strtolower($value),
+        );
+    }
 }
